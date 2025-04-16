@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ContainerClient } from "@azure/storage-blob";
 
 const Gallery = () => {
@@ -8,7 +8,7 @@ const Gallery = () => {
   const sasToken = process.env.REACT_APP_SAS_TOKEN;
   const blobUrl = process.env.REACT_APP_BLOB_URL;
 
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     const containerClient = new ContainerClient(`${blobUrl}?${sasToken}`);
     const urls = [];
 
@@ -17,7 +17,7 @@ const Gallery = () => {
     }
 
     setImageUrls(urls);
-  };
+  }, [blobUrl, sasToken]);
 
   const deleteImage = async (blobName) => {
     try {
@@ -39,7 +39,7 @@ const Gallery = () => {
 
   useEffect(() => {
     fetchImages();
-  }, []);
+  }, [fetchImages]);
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -100,7 +100,6 @@ const Gallery = () => {
         ))}
       </div>
 
-      {/* 🔍 Lightbox for images only */}
       {lightboxUrl && (
         <div
           onClick={() => setLightboxUrl(null)}
