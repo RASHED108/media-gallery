@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-      id-token: write
       contents: read
 
     steps:
@@ -24,17 +23,8 @@ jobs:
           submodules: true
           lfs: false
 
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
-
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
-        with:
-          script: |
-            const core = require('@actions/core')
-            return await core.getIDToken()
-          result-encoding: string
+      - name: Setup Node
+        uses: actions/setup-node@v3
 
       - name: Build And Deploy
         id: builddeploy
@@ -42,10 +32,9 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_SEA_0917BF103 }}
           action: "upload"
-          app_location: "/"                 # ✅ Root of your React app
-          api_location: ""                  # If you have no backend APIs
-          output_location: "build"          # React default build folder
-          github_id_token: ${{ steps.idtoken.outputs.result }}
+          app_location: "/"             # Adjust if your React app is inside a subfolder
+          api_location: ""              # Leave empty if not using Azure Functions
+          output_location: "build"      # React's default build directory
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
