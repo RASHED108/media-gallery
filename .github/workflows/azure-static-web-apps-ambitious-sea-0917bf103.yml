@@ -34,7 +34,7 @@ jobs:
           action: "upload"
           app_location: "/"             # Adjust if your React app is inside a subfolder
           api_location: ""              # Leave empty if not using Azure Functions
-          output_location: "build"      # React's default build directory
+          output_location: "dist"      # React's default build directory
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
